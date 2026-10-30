@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>리듬꼴 대모험</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ctext y='16' font-size='16'%3E🥁%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fff6e0;
+      --card: #fff;
+      --ink: #2a2140;
+      --a: #ff7a45;
+      --b: #4aa8ff;
+      --c: #7bd35a;
+      --line: #ffd9a8;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #241a3d;
+        --card: #33275a;
+        --ink: #fff4dc;
+        --line: #5a4a8a;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #241a3d;
+      --card: #33275a;
+      --ink: #fff4dc;
+      --line: #5a4a8a;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 18px/1.5 'Jua', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: env(safe-area-inset-top, 0px);
+      background: #ff7a45;
+      z-index: 10;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      background: linear-gradient(90deg, #ff7a45, #ffb347);
+      color: #fff;
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 5;
+    }
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    h2 {
+      margin: .2em 0 .5em;
+      font-size: 21px;
+    }
+    nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 8px;
+      background: var(--card);
+    }
+    nav button, .chip {
+      font: inherit;
+      border: 3px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    nav .on, .chip.on {
+      background: var(--b);
+      color: #fff;
+      border-color: var(--b);
+    }
+    main {
+      max-width: 920px;
+      margin: auto;
+      padding: 8px 12px 40px;
+    }
+    .card {
+      background: var(--card);
+      border: 3px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      margin: 10px 0;
+    }
+    .b {
+      font: inherit;
+      border: 0;
+      border-radius: 14px;
+      padding: 8px 16px;
+      margin: 2px;
+      background: var(--a);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, .2);
+    }
+    .b:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+    .b.ghost {
+      background: #aaa;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .row:hover {
+      background: var(--line);
+    }
+    .row b {
+      width: 110px;
+    }
+    .ic {
+      width: 40px;
+      text-align: center;
+    }
+    .bar {
+      display: flex;
+      flex: 1;
+      gap: 2px;
+      min-width: 80px;
+    }
+    .bar i {
+      flex: 1;
+      height: 16px;
+      border: 2px solid var(--a);
+      border-radius: 3px;
+    }
+    .bar i.f {
+      background: var(--b);
+    }
+    .big {
+      text-align: center;
+    }
+    .cells {
+      display: flex;
+      max-width: 520px;
+    }
+    .cells i {
+      flex: 1;
+      height: 46px;
+      border: 2px solid var(--a);
+      cursor: pointer;
+      background: var(--card);
+    }
+    .cells i:nth-child(odd) {
+      border-left: 4px solid var(--a);
+    }
+    .cells i:nth-child(even) {
+      border-left-style: dashed;
+    }
+    .cells i.f {
+      background: var(--b);
+    }
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26%;
+    }
+    .cell2 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 70px;
+      margin: 8px 0;
+      border: 3px solid var(--line);
+      border-radius: 14px;
+      cursor: pointer;
+      background: var(--card);
+    }
+    .cell2.sel {
+      border-color: var(--a);
+    }
+    .pal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pi {
+      width: 68px;
+      text-align: center;
+      border: 3px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 4px;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+    .pi small {
+      display: block;
+      font-size: 12px;
+    }
+    .ghost2 {
+      position: fixed;
+      z-index: 99;
+      pointer-events: none;
+      opacity: .85;
+    }
+    .score {
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 10px 4px;
+    }
+    .tsg {
+      font-size: 30px;
+      line-height: 1;
+      align-self: center;
+    }
+    .rep {
+      align-self: center;
+      font-size: 26px;
+    }
+    .barl {
+      width: 4px;
+      background: var(--ink);
+    }
+    .meas {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      min-height: 100px;
+      border: 3px dashed var(--line);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 6px 6px 22px;
+    }
+    .meas.act {
+      border-color: var(--a);
+    }
+    .it {
+      display: inline-flex;
+      justify-content: center;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .hl {
+      background: #ffd23f;
+      transform: scale(1.2);
+    }
+    .it.hl {
+      color: #2a2140;
+    }
+    .cnt {
+      position: absolute;
+      bottom: 2px;
+      right: 8px;
+    }
+    .cnt.ok {
+      color: #2eb34a;
+    }
+    .clapbtn {
+      font-size: 70px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 0;
+      background: var(--c);
+      box-shadow: 0 8px 0 #4a9a35;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .clapbtn:active {
+      transform: translateY(6px);
+      box-shadow: none;
+    }
+    .stg {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      text-align: center;
+    }
+    .pl {
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      padding: 8px;
+    }
+    .face {
+      font-size: 56px;
+      transition: transform .1s;
+    }
+    .pl.hop .face {
+      transform: translateY(-14px) scale(1.15);
+    }
+    .ie {
+      font-size: 30px;
+    }
+    .dot {
+      display: inline-block;
+      width: 34px;
+      height: 34px;
+      margin: 3px;
+      border-radius: 50%;
+      border: 4px solid #fff;
+      box-shadow: 0 0 0 2px #888;
+      cursor: pointer;
+    }
+    .dot.on {
+      box-shadow: 0 0 0 5px var(--a);
+    }
+    select, input {
+      font: inherit;
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 2px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+    }
+    .cf {
+      position: fixed;
+      top: -40px;
+      font-size: 28px;
+      pointer-events: none;
+      z-index: 99;
+      animation: fall 1.6s ease-in forwards;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cf {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎵 리듬꼴 대모험</h1>
+    <div id="st">⭐ 0</div>
+  </header>
+  <nav id="nav"></nav>
+  <main id="m"></main>
+
+  <script>
+    const $ = s => document.querySelector(s),
+          H = (e, h) => e.innerHTML = h,
+          R = a => a[Math.random() * a.length | 0],
+          sh = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
+
+    let stars = 0, AC, MG, T = [], bpm = 90, fi = 'tam', cur = 0, AM = 0, RAF, P = [], MV = { bn: 0 }, th = 0, D, F, MT, CG, qok = 0, cs, cpi = 0;
+    let song = { ts: 4, m: [['q', 'q', 'e', 'e', 'q'], ['e', 'e', 'e', 'e', 'q', 'q']] }, inst = ['tam', 'tri', 'cas', 'drum'];
+
+    const star = n => { stars += n; H($('#st'), '⭐ ' + stars); };
+
+    function ac() {
+      if (!AC) {
+        AC = new (window.AudioContext || window.webkitAudioContext)();
+        MG = AC.createGain();
+        MG.connect(AC.destination);
+      }
+      if (AC.state == 'suspended') AC.resume();
+    }
+
+    function stop() {
+      T.forEach(clearTimeout);
+      T = [];
+      if (AC) {
+        MG.disconnect();
+        MG = AC.createGain();
+        MG.connect(AC.destination);
+      }
+      document.querySelectorAll('.hl,.hop').forEach(e => e.classList.remove('hl', 'hop'));
+    }
+
+    function noise(t, d, f, q, g) {
+      const b = AC.createBuffer(1, AC.sampleRate * d | 0, AC.sampleRate),
+            a = b.getChannelData(0);
+      for (let i = 0; i < a.length; i++) a[i] = Math.random() * 2 - 1;
+      const s = AC.createBufferSource();
+      s.buffer = b;
+      const fl = AC.createBiquadFilter();
+      fl.type = 'bandpass';
+      fl.frequency.value = f;
+      fl.Q.value = q;
+      const n = AC.createGain();
+      n.gain.setValueAtTime(g, t);
+      n.gain.exponentialRampToValueAtTime(.001, t + d);
+      s.connect(fl);
+      fl.connect(n);
+      n.connect(MG);
+      s.start(t);
+    }
+
+    function tone(t, f, d, g, ty, f2) {
+      const o = AC.createOscillator(),
+            n = AC.createGain();
+      o.type = ty || 'sine';
+      o.frequency.setValueAtTime(f, t);
+      if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+      n.gain.setValueAtTime(g, t);
+      n.gain.exponentialRampToValueAtTime(.001, t + d);
+      o.connect(n);
+      n.connect(MG);
+      o.start(t);
+      o.stop(t + d);
+    }
+
+    const INST = {
+      tam: { n: '탬버린', e: '🔔', p: t => { noise(t, .3, 8000, 1, .7); noise(t, .1, 4000, 2, .5); } },
+      tri: { n: '트라이앵글', e: '🔺', p: t => { tone(t, 2600, 1.2, .25); tone(t, 3900, 1, .12); } },
+      cas: { n: '캐스터네츠', e: '🦀', p: t => { noise(t, .05, 2200, 6, 1.2); noise(t + .06, .04, 1800, 6, .8); } },
+      gui: { n: '귀로', e: '🥒', p: t => { for (let i = 0; i < 6; i++) noise(t + i * .025, .03, 3000 + i * 200, 3, .6); } },
+      drum: { n: '북', e: '🥁', p: t => tone(t, 160, .3, .9, 'sine', 50) },
+      mar: { n: '마라카스', e: '🌶️', p: t => noise(t, .12, 6000, 1, .7) },
+      wood: { n: '우드블록', e: '🧱', p: t => tone(t, 900, .08, .5, 'square') }
+    };
+
+    const clapS = t => { noise(t, .1, 1800, 1.2, 1.2); noise(t, .2, 900, 1, .6); },
+          tick = (t, s) => tone(t, s ? 1200 : 800, .06, .3, 'square');
+
+    const N = [
+      { k: 'w', n: '온음표', b: 4 },
+      { k: 'dh', n: '점2분음표', b: 3 },
+      { k: 'h', n: '2분음표', b: 2 },
+      { k: 'dq', n: '점4분음표', b: 1.5 },
+      { k: 'q', n: '4분음표', b: 1 },
+      { k: 'e', n: '8분음표', b: .5 },
+      { k: 'wr', n: '온쉼표', b: 4, r: 1 },
+      { k: 'hr', n: '2분쉼표', b: 2, r: 1 },
+      { k: 'qr', n: '4분쉼표', b: 1, r: 1 },
+      { k: 'er', n: '8분쉼표', b: .5, r: 1 }
+    ];
+
+    const NM = Object.fromEntries(N.map(x => [x.k, x])),
+          bl = b => ({ .5: '1/2', 1.5: '1과 1/2' }[b] || b) + '박';
+
+    function sym(k, s = 44) {
+      const L = '<path d="M0 22H40" stroke="currentColor" stroke-width="2" opacity=".35"/>',
+            rs = {
+              wr: L + '<rect x="10" y="22" width="20" height="8" fill="currentColor"/>',
+              hr: L + '<rect x="10" y="14" width="20" height="8" fill="currentColor"/>',
+              qr: '<path d="M17 6L27 20L16 32L27 44Q15 43 19 56" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>',
+              er: '<circle cx="15" cy="20" r="5" fill="currentColor"/><path d="M19 23Q27 22 29 14L17 54" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>'
+            };
+      let g;
+      if (rs[k]) g = rs[k];
+      else {
+        const hol = /^(w|h|dh)$/.test(k);
+        g = `<ellipse cx="14" cy="46" rx="10" ry="7" transform="rotate(-20 14 46)" fill="${hol ? 'none' : 'currentColor'}" stroke="currentColor" stroke-width="3.5"/>`;
+        if (k != 'w') g += '<path d="M23 44V8" stroke="currentColor" stroke-width="3"/>';
+        if (k == 'e') g += '<path d="M23 8C23 22 38 24 34 40" fill="none" stroke="currentColor" stroke-width="3"/>';
+        if (k[0] == 'd') g += '<circle cx="33" cy="46" r="3" fill="currentColor"/>';
+      }
+      return `<svg viewBox="0 0 40 60" width="${s * .67}" height="${s}" aria-label="${NM[k].n}">${g}</svg>`;
+    }
+
+    function fx() {
+      for (let i = 0; i < 24; i++) {
+        const s = document.createElement('span');
+        s.className = 'cf';
+        s.textContent = R(['🎵', '⭐', '🎉', '✨', '🎶']);
+        s.style.cssText = `left:${Math.random() * 100}vw;animation-delay:${Math.random() * .4}s`;
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 2200);
+      }
+    }
+
+    const flash = (id, ms) => {
+      const e = $('#' + id);
+      if (e) {
+        e.classList.add('hl');
+        setTimeout(() => e.classList.remove('hl'), ms);
+      }
+    };
+
+    const U = (s, m) => s.m[m].reduce((a, k) => a + NM[k].b, 0);
+
+    function flat(s) {
+      let ev = [];
+      s.m.forEach((ms, m) => {
+        let b = m * s.ts;
+        ms.forEach((k, i) => {
+          ev.push({ b, d: NM[k].b, r: /r$/.test(k), m, i });
+          b += NM[k].b;
+        });
+      });
+      return ev;
+    }
+
+    function run(n, ins, cb, end) {
+      ac();
+      stop();
+      const spb = 60 / bpm,
+            t0 = AC.currentTime + .15,
+            per = song.ts * 2 * spb,
+            ev = flat(song);
+      for (let l = 0; l < n; l++) {
+        ev.forEach(e => {
+          const t = t0 + l * per + e.b * spb;
+          if (!e.r) INST[ins[l % ins.length]].p(t);
+          T.push(setTimeout(() => cb && cb(l, e), (t - AC.currentTime) * 1000));
+        });
+      }
+      T.push(setTimeout(() => end && end(), (t0 + n * per - AC.currentTime) * 1000 + 200));
+    }
+
+    function scoreHTML(s, p, ed) {
+      return `<div class="score"><b class="tsg">${s.ts}<br>4</b>${s.m.map((ms, m) => `<div class="meas ${ed && m == AM ? 'act' : ''}" data-m="${m}" ${ed ? `onclick="AM=${m};sc()"` : ''}>${ms.map((k, i) => `<span class="it" id="${p}_${m}_${i}" ${ed ? `onclick="event.stopPropagation();rm(${m},${i})"` : ''} style="min-width:${30 + NM[k].b * 18}px">${sym(k, 50)}</span>`).join('')}${ed ? `<small class="cnt ${U(s, m) == s.ts ? 'ok' : ''}">${U(s, m)}/${s.ts}박</small>` : ''}</div>`).join('<i class="barl"></i>')}<b class="rep">:‖</b></div>`;
+    }
+
+    const TABS = [
+      ['📖', '음표 공부', () => study()],
+      ['🎨', '칸 칠하기', () => { F = { ok: 0 }; nextF(); }],
+      ['✏️', '음표 그리기', () => { D = { k: R(['w', 'h', 'q', 'e']), s: 0, col: '#333' }; dr(); }],
+      ['🔗', '선 긋기', () => match()],
+      ['🏭', '리듬 공장', () => { AM = 0; fa(); }],
+      ['👏', '박수 게임', () => { cpi = 0; cs = song; clap(); }],
+      ['🎻', '합주 무대', () => stage()],
+      ['🎬', '뮤직비디오', () => mvInit()]
+    ];
+
+    function go(i) {
+      cur = i;
+      stop();
+      cancelAnimationFrame(RAF);
+      H($('#nav'), TABS.map((t, j) => `<button class="${i == j ? 'on' : ''}" onclick="go(${j})">${t[0]} ${t[1]}</button>`).join(''));
+      H($('#m'), '');
+      TABS[i][2]();
+    }
+
+    /* 1 공부 */
+    function study() {
+      H($('#m'), `<div class="card"><h2>음표와 쉼표 (눌러서 소리 들어요!)</h2>${N.map(x => `<div class="row" id="r_${x.k}" onclick="hear('${x.k}')"><span class="ic">${sym(x.k)}</span><b>${x.n}</b><span>${bl(x.b)}</span><span class="bar">${[...Array(8)].map((_, i) => `<i class="${i < x.b * 2 ? 'f' : ''}"></i>`).join('')}</span></div>`).join('')}</div>
+<div class="card"><h2>박자 소리 들어요</h2>${[2, 3, 4].map(t => `<button class="b" onclick="accent(${t})">${t}/4박자</button>`).join(' ')}<p id="ac" class="big" style="font-size:34px">강 약</p></div><div class="card" id="qz"></div>`);
+      quiz();
+    }
+
+    function hear(k) {
+      ac();
+      stop();
+      flash('r_' + k, NM[k].b * 600);
+      if (!/r$/.test(k)) tone(AC.currentTime + .05, 440, NM[k].b * .6, .4, 'triangle');
+    }
+
+    function accent(t) {
+      ac();
+      stop();
+      const lb = t == 2 ? ['강', '약'] : t == 3 ? ['강', '약', '약'] : ['강', '약', '중강', '약'];
+      for (let i = 0; i < t * 3; i++) {
+        const j = i % t, x = AC.currentTime + .1 + i * .6;
+        tone(x, j == 0 ? 880 : j == 2 && t == 4 ? 660 : 440, .1, .5, 'square');
+        T.push(setTimeout(() => H($('#ac'), lb.map((l, q) => q == j ? `<b style="color:var(--a)">${l}</b>` : l).join(' ')), (x - AC.currentTime) * 1000));
+      }
+    }
+
+    function quiz() {
+      const x = R(N),
+            md = R([0, 1]),
+            cr = md ? bl(x.b) : x.n,
+            o = sh([cr, ...sh([...new Set(N.map(y => md ? bl(y.b) : y.n))].filter(v => v != cr)).slice(0, 3)]);
+      H($('#qz'), `<h2>퀴즈 (맞힌 문제 ${qok}개)</h2><div class="big">${sym(x.k, 100)}</div><p>${md ? '몇 박 동안 소리 날까요?' : '이름이 뭘까요?'}</p>${o.map(v => `<button class="b" onclick="qa(this,${v == cr})">${v}</button>`).join(' ')}`);
+    }
+
+    function qa(b, ok) {
+      if (ok) {
+        qok++;
+        star(1);
+        b.textContent += ' ✅';
+        setTimeout(quiz, 700);
+      } else {
+        b.style.background = '#999';
+        b.textContent += ' ❌';
+      }
+    }
+
+    /* 2 칠하기 */
+    function nextF() {
+      const x = R(N);
+      F.x = x;
+      F.c = Array(8).fill(0);
+      H($('#m'), `<div class="card"><h2>이름 쓰고 칸 칠하기 (${F.ok}/10)</h2><div class="big">${sym(x.k, 100)}</div><p>① 이름을 써 보세요 <input id="nm" placeholder="음표 이름"> <button class="b" onclick="$('#nm').value='${x.n}'">힌트</button></p><p>② 소리 나는 길이만큼 왼쪽부터 칸을 칠해요 (한 칸은 반 박)</p><div class="cells">${F.c.map((_, i) => `<i onclick="tf(${i})"></i>`).join('')}</div><p><button class="b" onclick="cf()">확인!</button></p><p id="fb"></p></div>`);
+    }
+
+    function tf(i) {
+      F.c[i] ^= 1;
+      document.querySelectorAll('.cells i')[i].classList.toggle('f');
+    }
+
+    function cf() {
+      const x = F.x,
+            a = $('#nm').value.replace(/\s/g, '') == x.n,
+            c = F.c.every((v, i) => v == (i < x.b * 2 ? 1 : 0)),
+            f = $('#fb');
+      if (a && c) {
+        F.ok++;
+        star(2);
+        fx();
+        f.textContent = '정답! 🎉';
+        F.ok >= 10 ? H($('#m'), '<div class="card big"><h1>🏆 10문제 완료!</h1><button class="b" onclick="TABS[1][2]()">다시 도전</button></div>') : setTimeout(nextF, 900);
+      } else f.textContent = !a ? '이름을 다시 확인해 보세요 🤔' : '칠한 칸 수를 다시 세어 보세요 (왼쪽부터!) 🤔';
+    }
+
+    /* 3 그리기 */
+    const COL = ['#333', '#e5484d', '#ff7a45', '#ffc53d', '#2eb34a', '#4aa8ff', '#8e4ec6', '#e93d82'];
+
+    function dr() {
+      const k = D.k,
+            hol = k == 'w' || k == 'h',
+            st = 'stroke="currentColor" stroke-width="6" fill="none" pointer-events="stroke"';
+      H($('#m'), `<div class="card"><h2>${NM[k].n} 그리기</h2><p>이렇게 생겼어요 ${sym(k, 60)} 머리 → 기둥 → 꼬리 순서로 눌러요!</p>
+<svg viewBox="0 0 80 120" width="160" height="240" style="background:#fff;border-radius:12px;border:3px dashed var(--line)"><g id="p0" style="color:#333;display:none" onclick="cl(0)"><ellipse cx="28" cy="92" rx="20" ry="14" transform="rotate(-20 28 92)" fill="${hol ? 'none' : 'currentColor'}" stroke="currentColor" stroke-width="6" pointer-events="all"/></g><g id="p1" style="color:#333;display:none" onclick="cl(1)"><path d="M47 88V16" ${st}/></g><g id="p2" style="color:#333;display:none" onclick="cl(2)"><path d="M47 16C47 44 78 48 70 80" ${st}/></g></svg>
+<p><button class="b" onclick="st(0)">① 머리</button><button class="b" onclick="st(1)">② 기둥</button><button class="b" onclick="st(2)">③ 꼬리</button> <button class="b ghost" onclick="TABS[2][2]()">새 음표</button></p><p id="dm"></p>
+<p>색을 고르고 그림을 눌러 색칠해요</p><div>${COL.map(c => `<i class="dot ${c == D.col ? 'on' : ''}" style="background:${c}" onclick="D.col='${c}';document.querySelectorAll('.dot').forEach(e=>e.classList.toggle('on',e===this))"></i>`).join('')}</div></div>
+<div class="card"><h2>악보에 자유롭게 그려요 (위에서 고른 색)</h2><canvas id="cv" width="640" height="200" style="width:100%;touch-action:none;border-radius:12px"></canvas><button class="b ghost" onclick="cvInit()">지우개로 싹!</button></div>`);
+      cvInit();
+    }
+
+    function st(i) {
+      const need = { w: 1, h: 2, q: 2, e: 3 }[D.k],
+            f = $('#dm');
+      if (i < D.s) f.textContent = '이미 그렸어요!';
+      else if (i >= need) f.textContent = `${NM[D.k].n}에는 ${['머리', '기둥', '꼬리'][i]}가 없어요!`;
+      else if (i > D.s) f.textContent = '순서가 틀렸어요! 머리 → 기둥 → 꼬리';
+      else {
+        $('#p' + i).style.display = 'block';
+        D.s++;
+        f.textContent = D.s == need ? '멋져요! 이제 색칠해 보세요 🎨' : '좋아요! 다음은?';
+        if (D.s == need) { star(1); fx(); }
+      }
+    }
+
+    function cl(i) { $('#p' + i).style.color = D.col; }
+
+    function cvInit() {
+      const c = $('#cv'), x = c.getContext('2d');
+      x.fillStyle = '#fff';
+      x.fillRect(0, 0, 640, 200);
+      x.strokeStyle = '#999';
+      x.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        x.beginPath();
+        x.moveTo(0, 50 + i * 25);
+        x.lineTo(640, 50 + i * 25);
+        x.stroke();
+      }
+      x.lineCap = 'round';
+      x.lineWidth = 6;
+      let d = 0;
+      const p = e => {
+        const r = c.getBoundingClientRect();
+        return [(e.clientX - r.left) * 640 / r.width, (e.clientY - r.top) * 200 / r.height];
+      };
+      c.onpointerdown = e => {
+        d = 1;
+        const [a, b] = p(e);
+        x.strokeStyle = D.col;
+        x.beginPath();
+        x.moveTo(a, b);
+      };
+      c.onpointermove = e => {
+        if (d) {
+          const [a, b] = p(e);
+          x.lineTo(a, b);
+          x.stroke();
+        }
+      };
+      c.onpointerup = c.onpointerleave = () => d = 0;
+    }
+
+    /* 4 선긋기 */
+    function match() {
+      const md = R([0, 1]);
+      let it = sh(N);
+      if (md) {
+        const s = new Set();
+        it = it.filter(x => !s.has(x.b) && s.add(x.b));
+      }
+      MT = { md, it: it.slice(0, 5), sel: null, pr: {} };
+      MT.rs = sh(MT.it);
+      H($('#m'), `<div class="card"><h2>${md ? '음표와 박 수를 선으로 이어요' : '음표와 이름을 선으로 이어요'}</h2><div id="mw" style="position:relative"><div class="cols"><div>${MT.it.map((x, i) => `<div class="cell2" id="l${i}" onclick="ml(${i})">${sym(x.k, 56)}</div>`).join('')}</div><div>${MT.rs.map((x, i) => `<div class="cell2" id="r${i}" onclick="mr(${i})">${md ? bl(x.b) : x.n}</div>`).join('')}</div></div><svg id="ln" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg></div><button class="b" onclick="mk()">확인</button><button class="b ghost" onclick="match()">새 문제</button><p id="fb"></p></div>`);
+    }
+
+    function ml(i) {
+      MT.sel = i;
+      document.querySelectorAll('.cell2').forEach(e => e.classList.remove('sel'));
+      $('#l' + i).classList.add('sel');
+    }
+
+    function mr(j) {
+      if (MT.sel == null) return;
+      for (const k in MT.pr) if (MT.pr[k] == j) delete MT.pr[k];
+      MT.pr[MT.sel] = j;
+      MT.sel = null;
+      document.querySelectorAll('.cell2').forEach(e => e.classList.remove('sel'));
+      lines();
+    }
+
+    function lines(res) {
+      const w = $('#mw').getBoundingClientRect();
+      H($('#ln'), Object.entries(MT.pr).map(([i, j]) => {
+        const a = $('#l' + i).getBoundingClientRect(),
+              b = $('#r' + j).getBoundingClientRect();
+        return `<line x1="${a.right - w.left}" y1="${a.top + a.height / 2 - w.top}" x2="${b.left - w.left}" y2="${b.top + b.height / 2 - w.top}" stroke="${res ? (res[i] ? '#2eb34a' : '#e5484d') : '#4aa8ff'}" stroke-width="5" stroke-linecap="round"/>`;
+      }).join(''));
+    }
+
+    function mk() {
+      const res = {};
+      let ok = 0;
+      for (const i in MT.pr) {
+        const a = MT.it[i], b = MT.rs[MT.pr[i]];
+        res[i] = MT.md ? a.b == b.b : a.n == b.n;
+        ok += res[i];
+      }
+      lines(res);
+      $('#fb').textContent = ok == 5 ? '🎉 모두 정답!' : `${ok}개 맞았어요. 빨간 선을 다시 이어 보세요!`;
+      if (ok == 5) { star(3); fx(); }
+    }
+
+    /* 5 공장 */
+    const instBtns = () => Object.keys(INST).map(k => `<button class="chip ${fi == k ? 'on' : ''}" onclick="fi='${k}';ac();INST[fi].p(AC.currentTime+.05);fa()">${INST[k].e}${INST[k].n}</button>`).join(' ');
+
+    function fa() {
+      H($('#m'), `<div class="card"><h2>리듬 공장 🏭 리듬꼴 만들기</h2><p>① 박자를 골라요 ${[2, 3, 4].map(t => `<button class="b ${song.ts == t ? '' : 'ghost'}" onclick="setTs(${t})">${t}/4</button>`).join('')}</p><p>② 음표·쉼표를 누르거나 마디로 끌어다 놓아요 (놓은 것을 누르면 빠져요)</p><div class="pal">${N.map(x => `<div class="pi" data-k="${x.k}">${sym(x.k, 50)}<small>${bl(x.b)}</small></div>`).join('')}</div><div id="sc"></div>
+<p>③ 악기 ${instBtns()}</p><p>빠르기 🐢<input type="range" min="60" max="140" value="${bpm}" oninput="bpm=+this.value">🐇</p><button class="b" onclick="pl()">▶ 연주</button><button class="b" onclick="rnd()">🎲 자동 만들기</button><button class="b ghost" onclick="clr()">🧹 지우기</button><p id="fb"></p></div>`);
+      sc();
+      pal();
+    }
+
+    const sc = () => H($('#sc'), scoreHTML(song, 's', 1));
+
+    function setTs(t) {
+      song = { ts: t, m: [[], []] };
+      AM = 0;
+      fa();
+    }
+
+    function clr() {
+      song.m = [[], []];
+      song.w = 0;
+      AM = 0;
+      sc();
+    }
+
+    function rm(m, i) {
+      song.m[m].splice(i, 1);
+      song.w = 0;
+      sc();
+    }
+
+    function add(k) {
+      const m = AM, b = NM[k].b, f = $('#fb');
+      if (U(song, m) + b > song.ts) {
+        f.textContent = `앗! ${m + 1}번째 마디에 ${bl(b)} 들어갈 자리가 없어요. 박을 세어 보세요!`;
+        return;
+      }
+      song.m[m].push(k);
+      if (U(song, m) == song.ts && m == 0) AM = 1;
+      sc();
+      if (U(song, 0) == song.ts && U(song, 1) == song.ts) {
+        f.textContent = '🎉 리듬꼴 완성! 연주 버튼을 눌러 보세요!';
+        if (!song.w) { song.w = 1; star(3); fx(); }
+      } else f.textContent = '';
+    }
+
+    function pal() {
+      document.querySelectorAll('.pi').forEach(p => p.onpointerdown = e => {
+        const k = p.dataset.k, x0 = e.clientX, y0 = e.clientY;
+        let g = null;
+        const mo = ev => {
+          if (!g && Math.hypot(ev.clientX - x0, ev.clientY - y0) > 8) {
+            g = p.cloneNode(true);
+            g.className = 'pi ghost2';
+            document.body.appendChild(g);
+          }
+          if (g) {
+            g.style.left = ev.clientX - 30 + 'px';
+            g.style.top = ev.clientY - 30 + 'px';
+          }
+        },
+        up = ev => {
+          removeEventListener('pointermove', mo);
+          removeEventListener('pointerup', up);
+          if (g) {
+            g.remove();
+            const t = document.elementFromPoint(ev.clientX, ev.clientY),
+                  ms = t && t.closest('.meas');
+            if (ms) {
+              AM = +ms.dataset.m;
+              add(k);
+            }
+          } else add(k);
+        };
+        addEventListener('pointermove', mo);
+        addEventListener('pointerup', up);
+      });
+    }
+
+    function pl() {
+      run(1, [fi], (l, e) => flash(`s_${e.m}_${e.i}`, e.d * 60 / bpm * 900));
+    }
+
+    function rnd() {
+      song.m = [0, 1].map(() => {
+        let r = song.ts, a = [];
+        while (r > 0) {
+          const o = N.filter(x => x.b <= r && (!x.r || (a.length && Math.random() < .5)) && x.k != 'wr' && x.k != 'hr');
+          o.push(...o.filter(x => x.b <= 1));
+          const x = R(o);
+          a.push(x.k);
+          r -= x.b;
+        }
+        return a;
+      });
+      song.w = 0;
+      AM = 1;
+      sc();
+    }
+
+    /* 6 박수 */
+    const PRE = [
+      ['내가 만든 리듬꼴', null],
+      ['2/4 쉬움', { ts: 2, m: [['q', 'q'], ['e', 'e', 'q']] }],
+      ['3/4 도전', { ts: 3, m: [['dq', 'e', 'q'], ['h', 'q']] }],
+      ['4/4 쉼표 조심!', { ts: 4, m: [['q', 'qr', 'q', 'q'], ['e', 'e', 'e', 'e', 'h']] }],
+      ['4/4 8분음표 파티', { ts: 4, m: [['e', 'e', 'e', 'e', 'q', 'q'], ['e', 'e', 'e', 'e', 'e', 'e', 'qr']] }]
+    ];
+
+    function clap() {
+      H($('#m'), `<div class="card"><h2>박수 게임 👏</h2><p>${PRE.map((p, i) => `<button class="chip ${i == cpi ? 'on' : ''}" onclick="cpi=${i};cs=PRE[${i}][1]||song;clap()">${p[0]}</button>`).join(' ')}</p>${scoreHTML(cs, 'c')}<p><label><input type="checkbox" id="pr" checked> 소리 길잡이 켜기(연습) · 끄면 도전!</label> 악기 <select onchange="fi=this.value">${Object.keys(INST).map(k => `<option value="${k}" ${fi == k ? 'selected' : ''}>${INST[k].n}</option>`).join('')}</select></p><button class="b" onclick="startClap()">▶ 시작 (한 마디 세고 시작해요)</button><button class="b ghost" onclick="stop();CG=null">■ 멈춤</button>
+<div id="cnt" class="big" style="font-size:48px;min-height:70px"></div><div class="big"><button class="clapbtn" onpointerdown="tap()">👏</button></div><p class="big" id="fbk">스페이스바로도 칠 수 있어요!</p><div id="res" class="big" style="font-size:26px"></div></div>`);
+    }
+
+    function startClap() {
+      ac();
+      stop();
+      H($('#res'), '');
+      const s = cs,
+            spb = 60 / bpm,
+            S = AC.currentTime + .3 + s.ts * spb,
+            ev = flat(s);
+      CG = { S, spb, ev: ev.filter(e => !e.r).map(e => ({ ...e, h: 0 })), x: 0, on: 1 };
+
+      for (let i = 0; i < s.ts; i++) {
+        const t = S - (s.ts - i) * spb;
+        tick(t, i == 0);
+        T.push(setTimeout(() => H($('#cnt'), i + 1), (t - AC.currentTime) * 1000));
+      }
+
+      ev.forEach(e => {
+        const t = S + e.b * spb;
+        if (!e.r && $('#pr').checked) INST[fi].p(t);
+        T.push(setTimeout(() => {
+          flash(`c_${e.m}_${e.i}`, e.d * spb * 900);
+          H($('#cnt'), e.r ? '쉿!' : '🎵');
+        }, (t - AC.currentTime) * 1000));
+      });
+
+      T.push(setTimeout(endClap, (S + s.ts * 2 * spb - AC.currentTime) * 1000 + 500));
+    }
+
+    function tap() {
+      ac();
+      clapS(AC.currentTime);
+      if (!CG || !CG.on) return;
+      const r = (AC.currentTime - CG.S) / CG.spb;
+      if (r < -.4) return;
+      let b = null, bd = .4;
+      CG.ev.forEach(e => {
+        const d = Math.abs(e.b - r);
+        if (!e.h && d < bd) {
+          bd = d;
+          b = e;
+        }
+      });
+      if (b) {
+        b.h = bd < .2 ? 2 : 1;
+        $('#fbk').textContent = b.h == 2 ? '완벽! ✨' : '좋아요! 👍';
+      } else {
+        CG.x++;
+        $('#fbk').textContent = '앗, 쉬는 곳이에요! 😮';
+      }
+    }
+
+    function endClap() {
+      if (!CG) return;
+      CG.on = 0;
+      const t = CG.ev.length,
+            h = CG.ev.filter(e => e.h).length,
+            p = CG.ev.filter(e => e.h == 2).length,
+            sc2 = Math.max(0, h - CG.x * .5) / t,
+            n = sc2 > .9 ? 3 : sc2 > .6 ? 2 : sc2 > .3 ? 1 : 0;
+      H($('#cnt'), '');
+      H($('#res'), `${'⭐'.repeat(n) || '💪'}<br>${t}번 중 ${h}번 성공 (완벽 ${p}번), 잘못 친 박수 ${CG.x}번`);
+      star(n * 2);
+      if (n > 1) fx();
+    }
+
+    addEventListener('keydown', e => {
+      if (cur == 5 && e.code == 'Space' && e.target.tagName != 'INPUT') {
+        e.preventDefault();
+        tap();
+      }
+    });
+
+    /* 7 합주 */
+    const PL = ['🐶', '🐱', '🐰', '🐻'];
+
+    function stage() {
+      H($('#m'), `<div class="card"><h2>합주 무대 🎪 연주자에게 악기를 골라 주세요</h2><div class="stg">${PL.map((p, i) => `<div class="pl" id="pl${i}"><div class="face">${p}</div><div class="ie" id="ie${i}">${INST[inst[i]].e}</div><select onchange="inst[${i}]=this.value;$('#ie${i}').textContent=INST[this.value].e;ac();INST[this.value].p(AC.currentTime+.05)">${Object.keys(INST).map(k => `<option value="${k}" ${inst[i] == k ? 'selected' : ''}>${INST[k].n}</option>`).join('')}</select><small>${i + 1}번째 연주</small></div>`).join('')}</div>${scoreHTML(song, 'o')}<button class="b" onclick="playStage()">▶ 합주 시작 (4번 연주)</button><button class="b ghost" onclick="stop()">■ 멈춤</button><p>리듬꼴은 '리듬 공장'에서 바꿀 수 있어요.</p></div>`);
+    }
+
+    function playStage() {
+      run(4, inst, (l, e) => {
+        flash(`o_${e.m}_${e.i}`, e.d * 60 / bpm * 900);
+        if (!e.r) {
+          const p = $('#pl' + l);
+          p.classList.add('hop');
+          setTimeout(() => p.classList.remove('hop'), 180);
+        }
+      });
+    }
+
+    /* 8 뮤직비디오 */
+    const TH = [
+      { n: '🌌 우주', bg: ['#1b1464', '#6a11cb'], e: ['⭐', '🪐', '🚀', '☄️', '🛸'] },
+      { n: '🌊 바다', bg: ['#0093e9', '#80d0c7'], e: ['🐠', '🐙', '🐳', '🫧', '🦀'] },
+      { n: '🌳 숲속', bg: ['#134e5e', '#71b280'], e: ['🍄', '🦋', '🌸', '🐿️', '🍃'] },
+      { n: '🍭 캔디', bg: ['#ff9a9e', '#fad0c4'], e: ['🍭', '🍬', '🍩', '🧁', '🍓'] }
+    ];
+
+    function mvInit() {
+      MV = { bn: 0, l: -1, txt: '' };
+      P = [];
+      H($('#m'), `<div class="card"><h2>뮤직비디오 감독 🎬</h2><p>제목 <input id="ti" value="우리 반 리듬 파티"> 감독 <input id="dr" placeholder="내 이름" size="8"></p><p>배경 ${TH.map((t, i) => `<button class="chip ${i == th ? 'on' : ''}" onclick="th=${i};document.querySelectorAll('.chip').forEach((e,j)=>e.classList.toggle('on',j==${i}));drawMV()">${t.n}</button>`).join(' ')}</p><canvas id="mc" width="640" height="360" style="width:100%;border-radius:16px"></canvas><br><button class="b" onclick="playMV()">🎬 뮤직비디오 시작!</button><button class="b ghost" onclick="stop();cancelAnimationFrame(RAF)">■ 멈춤</button><p>합주 무대에서 고른 악기 4개로 연주하고, 음표마다 화면이 터져요!</p></div>`);
+      drawMV();
+    }
+
+    function drawMV(txt) {
+      const x = $('#mc').getContext('2d'),
+            t = TH[th],
+            g = x.createLinearGradient(0, 0, 0, 360);
+      g.addColorStop(0, t.bg[0]);
+      g.addColorStop(1, t.bg[1]);
+      x.fillStyle = g;
+      x.fillRect(0, 0, 640, 360);
+      x.textAlign = 'center';
+      x.fillStyle = '#fff';
+      x.font = '30px Jua,sans-serif';
+      x.fillText($('#ti').value, 320, 44);
+
+      P.forEach(p => {
+        x.font = p.s + 'px serif';
+        x.globalAlpha = Math.max(p.a, 0);
+        x.fillText(p.e, p.x, p.y);
+      });
+      x.globalAlpha = 1;
+
+      PL.forEach((e, i) => {
+        const on = i == MV.l,
+              px = 100 + i * 147,
+              y = 290 - (on ? MV.bn * 30 : 0);
+        x.font = (on ? 64 : 44) + 'px serif';
+        x.fillText(e, px, y);
+        x.font = '30px serif';
+        x.fillText(INST[inst[i]].e, px, y + 42);
+      });
+
+      x.fillStyle = '#fff';
+      x.font = '56px Jua,sans-serif';
+      x.fillText(txt || MV.txt, 320, 180);
+    }
+
+    function anim() {
+      P.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += .15;
+        p.a -= .012;
+      });
+      P = P.filter(p => p.a > 0);
+      MV.bn *= .9;
+      drawMV();
+      RAF = requestAnimationFrame(anim);
+    }
+
+    function playMV() {
+      cancelAnimationFrame(RAF);
+      MV = { bn: 0, l: 0, txt: '' };
+      P = [];
+      run(4, inst, (l, e) => {
+        MV.l = l;
+        if (e.r) return;
+        MV.bn = 1;
+        MV.txt = e.d >= 2 ? '쿵~' : e.d >= 1 ? '짝!' : '탁!';
+        for (let i = 0; i < 6 + e.d * 4; i++) {
+          P.push({
+            x: 320,
+            y: 200,
+            vx: (Math.random() - .5) * 10,
+            vy: -Math.random() * 6 - 2,
+            a: 1,
+            s: 30 + Math.random() * 30,
+            e: R(TH[th].e)
+          });
+        }
+      }, () => {
+        cancelAnimationFrame(RAF);
+        MV.l = -1;
+        P = [];
+        drawMV('끝! 감독 ' + ($('#dr').value || '나'));
+        star(3);
+        fx();
+      });
+      anim();
+    }
+
+    go(0);
+  </script>
+</body>
+</html>
